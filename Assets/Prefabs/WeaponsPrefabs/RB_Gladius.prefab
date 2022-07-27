@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 2
+  amount: 1
   type: Weapon
   Description: 
   icon: {fileID: 21300000, guid: 4edefef9e4405e946abad529e7763e65, type: 3}
@@ -147,3 +148,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2660eaf266705604cb45cdf5ad2c2735, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  item: {fileID: 0}
+  RightHand: {fileID: 0}

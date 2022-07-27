@@ -53,6 +53,8 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Script\InventarioScripts\Inventory.cs" />
+     <Compile Include="Assets\Script\InventarioScripts\InventoryCamera.cs" />
+     <Compile Include="Assets\Script\Items\WeaponController.cs" />
      <Compile Include="Assets\Script\Items\ItemInHand.cs" />
      <Compile Include="Assets\Script\InventarioScripts\Slot.cs" />
      <Compile Include="Assets\PlayerController.cs" />

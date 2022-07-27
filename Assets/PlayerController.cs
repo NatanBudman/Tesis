@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     private float horizontalMove;
     private float verticalMove;
     public float MaxSpeed;
-    [SerializeField] private Animator animation;
+    public Animator animation;
     [SerializeField] private float _RunSpeed;
 
     [SerializeField]
@@ -25,20 +25,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 _camRight;
     private Vector3 _movePlayer;
     private Vector3 playerInput;
-    private bool IsCanMove;
+    public bool IsCanMove;
     
-    // Diferentes Attaques y typo de arma equipada
-    public bool IsSplashAttack = false;
-    public float CoolwDownBasicSplachAttack;
-    private float CurrenTimeBasicSplashAttack;
-    
-    public bool IsPunchAttack = false;
-    public float CoolwDownPunchAttack;
-    private float CurrenTimePunchAttack;
 
-    private bool IsHasWeaponMele = false;
-    private bool IsHasWeaponShoot = false;
-    private bool IsHasBareHands = true;
 
 
 
@@ -52,31 +41,10 @@ public class PlayerController : MonoBehaviour
 
     private bool IsPressAWSD;
     
-    [SerializeField]
-    private GameObject ItemEquiped;
 
-    private GameObject weaponManager;
-    //private Items ItemEquiped;
-    private int _allItems;
-
-    private bool IsCanDefend;
-    private bool IsUseShield;
     private void Start()
     {
-        weaponManager = GameObject.FindGameObjectWithTag("WeaponManager");
-        
-        _allItems = weaponManager.transform.childCount;
-        
-      
-        
-        for (int i = 0; i < _allItems; i++)
-        {
-            if (weaponManager.transform.GetChild(i).gameObject.GetComponent<Items>().equipped == true)
-            {
-                ItemEquiped = weaponManager.transform.GetChild(i).gameObject;
-            }
-        
-        }
+
         Speed = MaxSpeed;
         
         characterController = GetComponent<CharacterController>();
@@ -95,7 +63,7 @@ public class PlayerController : MonoBehaviour
         CamDirection();
         PlayerInput();
         AnimationController();
-        Splash();
+        
         Jumps();
         characterController.Move(_movePlayer * Time.deltaTime);
         
@@ -167,110 +135,7 @@ public class PlayerController : MonoBehaviour
             MaxSpeed = ReturnSpeed;
         }
     }
-    private void Splash()
-    {
-       
-        
-        // tipo y arma equipada
-        if ( ItemEquiped != null)
-        {
-            if (ItemEquiped.GetComponent<Items>().type == "Weapon")
-            {
-                if (ItemEquiped.GetComponent<Items>().type == "Weapon" && ItemEquiped.GetComponent<Items>().gameObject.activeSelf)
-                {
-                    IsHasWeaponMele = true;
-                }else if ( ItemEquiped.GetComponent<Items>().type == "Weapon" && !ItemEquiped.GetComponent<Items>().gameObject.activeSelf)
-                {
-                    IsHasWeaponMele = false;
-                }
-            }
-
-            if (ItemEquiped.GetComponent<Items>().type == "Shield")
-            {
-                if (ItemEquiped.GetComponent<Items>().type == "Shield" && ItemEquiped.GetComponent<Items>().gameObject.activeSelf)
-                {
-                    IsCanDefend = true;
-                }else if ( ItemEquiped.GetComponent<Items>().type == "Shield" && !ItemEquiped.GetComponent<Items>().gameObject.activeSelf)
-                {
-                    IsCanDefend = false;
-                }
-            }
-        }
-        
-        // splash del Player
-        if (IsHasWeaponMele)
-        {
-            if (!IsSplashAttack)
-            {
-                CurrenTimeBasicSplashAttack += Time.deltaTime;
-            }
-       
-            if (Input.GetMouseButtonDown(0) && CurrenTimeBasicSplashAttack >= CoolwDownBasicSplachAttack)
-            {
-                IsSplashAttack = true;
-                IsCanMove = false;
-                CurrenTimeBasicSplashAttack = 0;
-            }
-            else
-            {
-                IsSplashAttack = false;
-            }
-
-          
-            if (CurrenTimeBasicSplashAttack >= CoolwDownBasicSplachAttack - 0.5f && IsCanMove == false)
-            {
-                IsCanMove = true;
-            }
-        }
    
-        if (!IsHasWeaponShoot || !IsHasWeaponMele)
-        {
-            IsHasBareHands = true;
-        }
-        else
-        {
-            IsHasBareHands = false;
-        }
-        // puñetazo basico
-        if (IsHasBareHands)
-        {
-         
-           
-            if (!IsPunchAttack)
-            {
-                CurrenTimePunchAttack += Time.deltaTime;
-           
-            }
-        
-            if (Input.GetMouseButtonDown(0) && CurrenTimePunchAttack >= CoolwDownPunchAttack)
-            {
-                IsPunchAttack = true;
-                IsCanMove = false;
-                CurrenTimePunchAttack = 0;
-            }
-            else
-            {
-                IsPunchAttack = false;
-            }
-
-            if (CurrenTimePunchAttack >= CoolwDownPunchAttack - 0.5f && IsCanMove == false)
-            {
-                IsCanMove = true;
-            }
-
-            if (IsCanDefend)
-            {
-                if (Input.GetMouseButton(1))
-                {
-                    IsUseShield = true;
-                }
-                if (Input.GetMouseButtonUp(1))
-                {
-                    IsUseShield = false;
-                }
-            }
-        }
-    }
 
     private void Jumps()
     {
@@ -314,10 +179,7 @@ public class PlayerController : MonoBehaviour
             animation.SetFloat("X",horizontalMove);
             animation.SetFloat("Speed",Speed);
         }
-  
-        animation.SetBool("Splash",IsSplashAttack);
-        animation.SetBool("Punch",IsPunchAttack);
-        animation.SetBool("ShieldPosicion",IsUseShield);
+
         animation.SetBool("IsGround",IsGround);
     }
 
@@ -347,14 +209,7 @@ public class PlayerController : MonoBehaviour
         _camRight = _camRight.normalized;
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.GetComponent<Items>())
-        {
-            ItemEquiped = other.gameObject;
-           
-        }
-    }
+
 
   
 }

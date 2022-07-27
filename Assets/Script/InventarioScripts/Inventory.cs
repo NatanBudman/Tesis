@@ -1,6 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 public class Inventory : MonoBehaviour
 {
@@ -16,7 +21,17 @@ public class Inventory : MonoBehaviour
 
     public GameObject SlotsHolder;
 
+    public GameObject ObjectSelected;
+    public GameObject Canvas;
+    
+    public Sprite SlotsSprite;
 
+    public GraphicRaycaster GraphicRaycasterrahicRay;
+    private PointerEventData pointerEventData;
+    private List<RaycastResult> _raycastResults;
+    [SerializeField] private Vector2 ExPosition;
+    
+    public GameObject PoolingItems;
 
     void Start()
     {
@@ -34,7 +49,9 @@ public class Inventory : MonoBehaviour
                 slots[i].GetComponent<Slot>().empty = true;
             }
         }
-        
+
+        pointerEventData = new PointerEventData(null);
+        _raycastResults = new List<RaycastResult>();
     }
 
     void Update()
@@ -52,6 +69,9 @@ public class Inventory : MonoBehaviour
         {
             inventory.SetActive(false);
         }
+
+        DragItem();
+
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -61,13 +81,83 @@ public class Inventory : MonoBehaviour
 
             Items item = ItemPickUpObject.GetComponent<Items>();
 
-            AddItem(ItemPickUpObject,item.ID,item.type,item.Description,item.icon);
+            AddItem(ItemPickUpObject,item.ID,item.amount,item.type,item.Description,item.icon);
 
           
         }
     }
+
+    void DragItem()
+    {
+      
+        if (Input.GetMouseButtonDown(0))
+        {
+            pointerEventData.position = Input.mousePosition;
+            GraphicRaycasterrahicRay.Raycast(pointerEventData,_raycastResults);
+
+            if (_raycastResults.Count > 0)
+            {
+                if (_raycastResults[0].gameObject.GetComponent<Slot>())
+                {
+                    Debug.Log("entre");
+                    ObjectSelected = _raycastResults[0].gameObject;
+                    ExPosition = ObjectSelected.transform.position;
+
+                }
+            }
+        }
+
+        if ( ObjectSelected != null)
+        {
+            if (ObjectSelected.GetComponent<Slot>().empty == false )
+            {
+                ObjectSelected.GetComponent<RectTransform>().localPosition = CanvasScreen(Input.mousePosition);
+
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            pointerEventData.position = Input.mousePosition;
+            _raycastResults.Clear();
+            GraphicRaycasterrahicRay.Raycast(pointerEventData,_raycastResults);
+            if (_raycastResults.Count > 0)
+            {
+                foreach (var result in _raycastResults)
+                {
+                    Debug.Log(result.gameObject.name);
+                    Debug.Log(ObjectSelected.gameObject.name);
+                    if (result.gameObject.tag == "slot")
+                    {
+                        ObjectSelected.GetComponent<Slot>();
+                       // ObjectSelected.GetComponent<Slot>().transform.position =
+                         //   ObjectSelected.GetComponent<Slot>().SlotPosition.position;
+                        
+                        Slot ExtractionSlot = ObjectSelected.GetComponent<Slot>();
+                        
+                        if (result.gameObject.name == ObjectSelected.gameObject.name)
+                        {
+                            Debug.Log("Misma casilla");
+                         
+                           ObjectSelected.GetComponent<Slot>().gameObject.SetActive(false);
+                           ObjectSelected.GetComponent<Slot>().gameObject.SetActive(true);
+                        }
+                        else if (result.gameObject.name != ObjectSelected.gameObject.name)
+                        {                           
+                            Debug.Log("dsitinta casilla");
+                            MoveItemSlot(ObjectSelected,result.gameObject,ExtractionSlot.item,
+                                ExtractionSlot.ID,ExtractionSlot.amount,ExtractionSlot.type,ExtractionSlot.Description,ExtractionSlot.icon);
+                        }
+                    }
+
+                    
+                }
+            }
+            ObjectSelected = null;
+        }
+        _raycastResults.Clear();
+    }
 // toma datos del items cogido
-    public void AddItem(GameObject ItemgameObject, int ItemID,string ItemType, string ItemDescription, Sprite icon) 
+    public void AddItem(GameObject ItemgameObject, int ItemID,int amount,string ItemType, string ItemDescription, Sprite icon) 
     {
         for (int i = 0; i < _allSlots; i++) 
         {
@@ -77,6 +167,7 @@ public class Inventory : MonoBehaviour
 
                 slots[i].GetComponent<Slot>().item = ItemgameObject;
                 slots[i].GetComponent<Slot>().ID = ItemID;
+                slots[i].GetComponent<Slot>().amount = amount;
                 slots[i].GetComponent<Slot>().type = ItemType;
                 slots[i].GetComponent<Slot>().Description = ItemDescription;
                 slots[i].GetComponent<Slot>().icon = icon;
@@ -93,4 +184,125 @@ public class Inventory : MonoBehaviour
             
         }
     }
+
+    public void MoveItemSlot(GameObject SlotExtraction, GameObject SlotReceives,GameObject ItemgameObject, int ItemID,int amount,string ItemType, string ItemDescription, Sprite icon)
+    {
+        Debug.Log("MoveItem");
+        Debug.Log(SlotExtraction.name);
+        Debug.Log(SlotExtraction.GetComponent<Slot>().ID);
+        Debug.Log(SlotReceives.name);
+        Debug.Log(SlotReceives.GetComponent<Slot>().ID);
+        if (SlotReceives.GetComponent<Slot>().empty == true && SlotExtraction.GetComponent<Slot>().empty == false)
+        {
+            Debug.Log("1");
+            SlotExtraction.GetComponent<Slot>();
+            
+            var SlotExtractioIcon = SlotReceives.GetComponent<Slot>().icon;
+            
+            SlotReceives.GetComponent<Slot>().item = ItemgameObject;
+            SlotReceives.GetComponent<Slot>().ID = ItemID;
+            SlotReceives.GetComponent<Slot>().amount = amount;
+            SlotReceives.GetComponent<Slot>().type = ItemType;
+            SlotReceives.GetComponent<Slot>().Description = ItemDescription;
+            SlotReceives.GetComponent<Slot>().icon = icon;
+        
+            SlotExtraction.GetComponent<Slot>().item = null;
+            SlotExtraction.GetComponent<Slot>().ID = 0;
+            SlotExtraction.GetComponent<Slot>().amount = 0;
+            SlotExtraction.GetComponent<Slot>().type = null;
+            SlotExtraction.GetComponent<Slot>().Description = null;
+            SlotExtraction.GetComponent<Slot>().icon = SlotExtractioIcon;
+        
+            ItemgameObject.transform.SetParent(SlotReceives.transform);
+
+            SlotReceives.GetComponent<Slot>().UpdateSlot();
+            SlotExtraction.GetComponent<Slot>().UpdateSlot();
+            
+            SlotReceives.GetComponent<Slot>().empty = false;
+            SlotExtraction.GetComponent<Slot>().empty = true;
+            return;
+        }
+
+        if (SlotExtraction.GetComponent<Slot>().empty == false && SlotReceives.GetComponent<Slot>().empty == false  && SlotReceives.gameObject.name != SlotExtraction.gameObject.name)
+        {
+            Debug.Log("2");
+
+            Debug.Log(SlotExtraction.name);
+            Debug.Log(SlotReceives.name);
+
+            SlotExtraction.GetComponent<Slot>();
+            SlotReceives.GetComponent<Slot>();
+            // = mismo objeto suma la cantidad
+            if (SlotExtraction.GetComponent<Slot>().ID == SlotReceives.GetComponent<Slot>().ID && SlotExtraction.GetComponent<Slot>().gameObject.name != SlotReceives.GetComponent<Slot>().gameObject.name)
+            {
+                Debug.Log("ID: IGUALES");
+
+                SlotReceives.GetComponent<Slot>().amount +=
+                    SlotExtraction.GetComponent<Slot>().amount;
+                
+                SlotReceives.GetComponent<Slot>().item = ItemgameObject;
+                SlotReceives.GetComponent<Slot>().ID = ItemID;
+                SlotReceives.GetComponent<Slot>().type = ItemType;
+                SlotReceives.GetComponent<Slot>().Description = ItemDescription;
+                SlotReceives.GetComponent<Slot>().icon = icon;
+                
+                
+                SlotExtraction.GetComponent<Slot>().item = null;
+                SlotExtraction.GetComponent<Slot>().ID = 0;
+                SlotExtraction.GetComponent<Slot>().amount = 0;
+                SlotExtraction.GetComponent<Slot>().type = null;
+                SlotExtraction.GetComponent<Slot>().Description = null;
+                SlotExtraction.GetComponent<Slot>().icon = SlotsSprite;
+                
+                SlotReceives.GetComponent<Slot>().UpdateSlot();
+                SlotExtraction.GetComponent<Slot>().UpdateSlot();
+                
+                ItemgameObject.transform.SetParent(PoolingItems.transform);
+                SlotExtraction.GetComponentInChildren<Items>().gameObject.transform.SetParent(PoolingItems.transform);
+                Debug.Log("llege al final");
+            }
+            else if (SlotExtraction.GetComponent<Slot>().ID != SlotReceives.GetComponent<Slot>().ID && SlotExtraction.GetComponent<Slot>().gameObject.name != SlotReceives.GetComponent<Slot>().gameObject.name)
+            {
+                Debug.Log("ID: distintos");
+
+                SlotExtraction.GetComponent<Slot>().item = SlotReceives.GetComponent<Slot>().item;
+                SlotExtraction.GetComponent<Slot>().ID = SlotReceives.GetComponent<Slot>().ID;
+                SlotExtraction.GetComponent<Slot>().type = SlotReceives.GetComponent<Slot>().type;
+                SlotExtraction.GetComponent<Slot>().Description = SlotReceives.GetComponent<Slot>().Description;
+                SlotExtraction.GetComponent<Slot>().icon = SlotReceives.GetComponent<Slot>().icon ;
+                
+                SlotExtraction.GetComponent<Slot>().amount = SlotReceives.GetComponent<Slot>().amount;
+                SlotReceives.GetComponent<Slot>().amount = amount;
+                
+                SlotReceives.GetComponent<Slot>().item = ItemgameObject;
+                SlotReceives.GetComponent<Slot>().ID = ItemID;
+                SlotReceives.GetComponent<Slot>().type = ItemType;
+                SlotReceives.GetComponent<Slot>().Description = ItemDescription;
+                SlotReceives.GetComponent<Slot>().icon = icon;
+                
+                SlotReceives.GetComponent<Slot>().UpdateSlot();
+                SlotExtraction.GetComponent<Slot>().UpdateSlot();
+                
+                ItemgameObject.transform.SetParent(SlotReceives.transform);
+                
+             //   SlotReceives.GetComponent<Slot>().gameObject.transform.SetParent(SlotReceives.transform);
+            }
+
+          
+            return;
+        }
+
+     
+
+      
+    }
+
+    public Vector2 CanvasScreen(Vector2 ScreenPos)
+    {
+        Vector2 viewportPoint = Camera.main.ScreenToViewportPoint(ScreenPos);
+        Vector2 canvasSize = Canvas.GetComponent<RectTransform>().sizeDelta;
+
+        return (new Vector2(viewportPoint.x * canvasSize.x,viewportPoint.y * canvasSize.y) - (canvasSize/2));
+    }
+
 }
