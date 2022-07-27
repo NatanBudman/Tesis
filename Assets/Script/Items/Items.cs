@@ -6,6 +6,7 @@ using UnityEngine.XR;
 public class Items : MonoBehaviour
 {
     public int ID;
+    public int amount;
     public string type;
     public string Description;
     public Sprite icon;

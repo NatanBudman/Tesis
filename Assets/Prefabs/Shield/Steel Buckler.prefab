@@ -328,6 +328,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 101
+  amount: 1
   type: Shield
   Description: 
   icon: {fileID: 0}
