@@ -125,7 +125,6 @@ public class WeaponController : MonoBehaviour
         if (IsHasBareHands)
         {
          
-           
             if (!IsPunchAttack)
             {
                 CurrenTimePunchAttack += Time.deltaTime;

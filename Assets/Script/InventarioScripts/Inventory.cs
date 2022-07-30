@@ -99,7 +99,6 @@ public class Inventory : MonoBehaviour
             {
                 if (_raycastResults[0].gameObject.GetComponent<Slot>())
                 {
-                    Debug.Log("entre");
                     ObjectSelected = _raycastResults[0].gameObject;
                     ExPosition = ObjectSelected.transform.position;
 
@@ -124,8 +123,7 @@ public class Inventory : MonoBehaviour
             {
                 foreach (var result in _raycastResults)
                 {
-                    Debug.Log(result.gameObject.name);
-                    Debug.Log(ObjectSelected.gameObject.name);
+                  
                     if (result.gameObject.tag == "slot")
                     {
                         ObjectSelected.GetComponent<Slot>();
@@ -136,14 +134,14 @@ public class Inventory : MonoBehaviour
                         
                         if (result.gameObject.name == ObjectSelected.gameObject.name)
                         {
-                            Debug.Log("Misma casilla");
+                            Debug.Log("Same slot");
                          
                            ObjectSelected.GetComponent<Slot>().gameObject.SetActive(false);
                            ObjectSelected.GetComponent<Slot>().gameObject.SetActive(true);
                         }
                         else if (result.gameObject.name != ObjectSelected.gameObject.name)
                         {                           
-                            Debug.Log("dsitinta casilla");
+                            Debug.Log("Diferent slot");
                             MoveItemSlot(ObjectSelected,result.gameObject,ExtractionSlot.item,
                                 ExtractionSlot.ID,ExtractionSlot.amount,ExtractionSlot.type,ExtractionSlot.Description,ExtractionSlot.icon);
                         }
@@ -163,6 +161,8 @@ public class Inventory : MonoBehaviour
         {
             if (slots[i].GetComponent<Slot>().empty) 
             {
+                Debug.Log($"Pick Up Item Name : {ItemgameObject.name}");
+                
                 ItemgameObject.GetComponent<Items>().pickUp = true;
 
                 slots[i].GetComponent<Slot>().item = ItemgameObject;
@@ -187,14 +187,12 @@ public class Inventory : MonoBehaviour
 
     public void MoveItemSlot(GameObject SlotExtraction, GameObject SlotReceives,GameObject ItemgameObject, int ItemID,int amount,string ItemType, string ItemDescription, Sprite icon)
     {
-        Debug.Log("MoveItem");
-        Debug.Log(SlotExtraction.name);
-        Debug.Log(SlotExtraction.GetComponent<Slot>().ID);
-        Debug.Log(SlotReceives.name);
-        Debug.Log(SlotReceives.GetComponent<Slot>().ID);
+
         if (SlotReceives.GetComponent<Slot>().empty == true && SlotExtraction.GetComponent<Slot>().empty == false)
         {
-            Debug.Log("1");
+            Debug.Log($"Extaction of Slot Item Name : {SlotExtraction.name}");
+            Debug.Log($"Move Slot Item Name : {SlotReceives.name}");
+            
             SlotExtraction.GetComponent<Slot>();
             
             var SlotExtractioIcon = SlotReceives.GetComponent<Slot>().icon;
@@ -225,17 +223,15 @@ public class Inventory : MonoBehaviour
 
         if (SlotExtraction.GetComponent<Slot>().empty == false && SlotReceives.GetComponent<Slot>().empty == false  && SlotReceives.gameObject.name != SlotExtraction.gameObject.name)
         {
-            Debug.Log("2");
-
-            Debug.Log(SlotExtraction.name);
-            Debug.Log(SlotReceives.name);
+            Debug.Log($"Extaction of Slot Item Name : {SlotExtraction.name}");
+            Debug.Log($"Move Slot Item Name : {SlotReceives.name}");
 
             SlotExtraction.GetComponent<Slot>();
             SlotReceives.GetComponent<Slot>();
             // = mismo objeto suma la cantidad
             if (SlotExtraction.GetComponent<Slot>().ID == SlotReceives.GetComponent<Slot>().ID && SlotExtraction.GetComponent<Slot>().gameObject.name != SlotReceives.GetComponent<Slot>().gameObject.name)
             {
-                Debug.Log("ID: IGUALES");
+                Debug.Log("ID: Equals");
 
                 SlotReceives.GetComponent<Slot>().amount +=
                     SlotExtraction.GetComponent<Slot>().amount;
@@ -259,11 +255,10 @@ public class Inventory : MonoBehaviour
                 
                 ItemgameObject.transform.SetParent(PoolingItems.transform);
                 SlotExtraction.GetComponentInChildren<Items>().gameObject.transform.SetParent(PoolingItems.transform);
-                Debug.Log("llege al final");
             }
             else if (SlotExtraction.GetComponent<Slot>().ID != SlotReceives.GetComponent<Slot>().ID && SlotExtraction.GetComponent<Slot>().gameObject.name != SlotReceives.GetComponent<Slot>().gameObject.name)
             {
-                Debug.Log("ID: distintos");
+                Debug.Log("ID: Diferent");
 
                 SlotExtraction.GetComponent<Slot>().item = SlotReceives.GetComponent<Slot>().item;
                 SlotExtraction.GetComponent<Slot>().ID = SlotReceives.GetComponent<Slot>().ID;
@@ -285,7 +280,6 @@ public class Inventory : MonoBehaviour
                 
                 ItemgameObject.transform.SetParent(SlotReceives.transform);
                 
-             //   SlotReceives.GetComponent<Slot>().gameObject.transform.SetParent(SlotReceives.transform);
             }
 
           
