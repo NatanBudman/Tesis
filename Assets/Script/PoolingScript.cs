@@ -1,0 +1,111 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Object = UnityEngine.Object;
+
+public class PoolingScript : MonoBehaviour
+{
+    private static GameObject poolingParent;
+
+    private static GameObject[] poolingChild;
+    
+    private static int ChildPoolingCount ;
+
+    private static List<GameObject> pooling;
+
+    private static bool IsHaveItem = false;
+    private void Start()
+    {
+        poolingParent = GameObject.FindGameObjectWithTag("PoolingParent");
+        
+        ChildPoolingCount = poolingParent.transform.childCount;
+        poolingChild = new GameObject[ChildPoolingCount];
+        
+        // Agrega todos los prefabs que hay en la carpeta Items
+        pooling = new List<GameObject>(Resources.LoadAll<GameObject>("Pooling"));
+        
+        Debug.Log($"GameObject Added to the Pool : {pooling.Count}");
+    
+    }
+
+    private void Update()
+    {
+   
+    }
+
+    public static void Instantiate(int id,Transform ObjectPosition,Transform parent, Quaternion rotacion)
+    {
+        GetChildInPool(id);
+        
+      
+        
+        foreach (GameObject ObjectInPool in poolingChild)
+        {
+
+            if (ObjectInPool.GetComponent<Items>().gameObject != null && IsHaveItem)
+            {
+                if (ObjectInPool.GetComponent<Items>().ID == id)
+                {
+                    Debug.Log($"Found Object ID :{id}");
+
+                    ObjectInPool.SetActive(true);
+                    ObjectInPool.gameObject.transform.position = ObjectPosition.position;
+                    ObjectInPool.gameObject.transform.rotation = rotacion;
+                    
+                    if (parent != null)
+                    {
+                        ObjectInPool.gameObject.transform.SetParent(parent);
+                    }
+                }
+            }
+        }
+
+        if (poolingChild.Length < 0 || IsHaveItem == false)
+        {
+            foreach (var FindObject in pooling)
+            {
+                if (FindObject.GetComponent<Items>().ID == id)
+                {
+                    Debug.Log($"Create New Item ID: {id}");
+
+                    Instantiate(FindObject,ObjectPosition.position,rotacion,parent);
+                }
+            }
+        }
+        
+        IsHaveItem = false;
+     
+    }
+
+    public static void Remove(GameObject ObjectRemove)
+    {
+        Debug.Log($"Remove Item Name : {ObjectRemove.name} ");
+        ObjectRemove.SetActive(false);
+        ObjectRemove.transform.SetParent(poolingParent.transform);
+    }
+
+    private static void GetChildInPool(int id)
+    {
+        ChildPoolingCount = poolingParent.transform.childCount;
+        
+        for (int i = 0; i < ChildPoolingCount; i++) 
+        {
+            poolingChild[i] = poolingParent.transform.GetChild(i).gameObject;
+        }
+        
+        for (int i = 0; i < ChildPoolingCount; i++)
+        {
+            Debug.Log("Find Object in PoolParent");
+            if (IsHaveItem == false)
+            {
+                if (poolingChild[i].gameObject.GetComponent<Items>().ID == id)
+                {
+                    Debug.Log("Find Object");
+                    IsHaveItem = true;
+                }
+            }
+            Debug.Log($"IshaveItem {IsHaveItem}");
+        }
+    }
+}
