@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour
     private float Speed ;
     [SerializeField]
     private CharacterController characterController;
-    private Rigidbody _rb;
 
     private bool IsRun;
 
@@ -25,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 _camRight;
     private Vector3 _movePlayer;
     private Vector3 playerInput;
-    public bool IsCanMove;
     
 
 
@@ -48,18 +46,17 @@ public class PlayerController : MonoBehaviour
         Speed = MaxSpeed;
         
         characterController = GetComponent<CharacterController>();
-        _rb = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (IsCanMove)
-        {
-            Moves();
-            PlayerInput();
-            PlayerMovement();
-        }
+       
+        Moves();
+        PlayerInput();
+        PlayerMovement();
+        
         CamDirection();
         PlayerInput();
         AnimationController();
@@ -71,15 +68,21 @@ public class PlayerController : MonoBehaviour
        
     }
 
-    
+    public void MoveController(bool IsCanMoved)
+    {
+        if (!IsCanMoved)
+        {
+            Speed = 0;
+        }
+        else
+        {
+            Speed = MaxSpeed;
+        }
+    }
+
     private void FixedUpdate()
     {
-        if (IsCanMove)
-        {
-            Moved();
-        }
-      
-        
+        Moved();
     }
 
     private void Moved() 
@@ -114,6 +117,15 @@ public class PlayerController : MonoBehaviour
             IsRun = false;
         }
 
+        if (Speed < 0 )
+        {
+            Speed = 0;
+        }
+
+        if (MaxSpeed < 0)
+        {
+            MaxSpeed = 4;
+        }
         if (Speed < MaxSpeed)
         {
             Speed += 2 * Time.deltaTime;
@@ -132,6 +144,8 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             var ReturnSpeed = MaxSpeed - _RunSpeed;
+            
+
             MaxSpeed = ReturnSpeed;
         }
     }
@@ -173,13 +187,10 @@ public class PlayerController : MonoBehaviour
 
     private void AnimationController()
     {
-        if (IsCanMove)
-        {
-            animation.SetFloat("Y",verticalMove);
-            animation.SetFloat("X",horizontalMove);
-            animation.SetFloat("Speed",Speed);
-        }
 
+        animation.SetFloat("Y",verticalMove);
+        animation.SetFloat("X",horizontalMove);
+        animation.SetFloat("Speed",Speed);
         animation.SetBool("IsGround",IsGround);
     }
 
