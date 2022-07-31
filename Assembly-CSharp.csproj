@@ -60,6 +60,7 @@
      <Compile Include="Assets\Script\Items\ItemInHand.cs" />
      <Compile Include="Assets\Script\InventarioScripts\Slot.cs" />
      <Compile Include="Assets\PlayerController.cs" />
+     <Compile Include="Assets\Script\GameManager.cs" />
      <Compile Include="Assets\Script\Items\Items.cs" />
      <Compile Include="Assets\Script\ThirdPersonaCamera.cs" />
  <Reference Include="UnityEngine">

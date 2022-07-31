@@ -29,7 +29,6 @@ public class Inventory : MonoBehaviour
     public GraphicRaycaster GraphicRaycasterrahicRay;
     private PointerEventData pointerEventData;
     private List<RaycastResult> _raycastResults;
-    [SerializeField] private Vector2 ExPosition;
     
     public GameObject PoolingItems;
 
@@ -100,7 +99,6 @@ public class Inventory : MonoBehaviour
                 if (_raycastResults[0].gameObject.GetComponent<Slot>())
                 {
                     ObjectSelected = _raycastResults[0].gameObject;
-                    ExPosition = ObjectSelected.transform.position;
 
                 }
             }
@@ -127,8 +125,6 @@ public class Inventory : MonoBehaviour
                     if (result.gameObject.tag == "slot")
                     {
                         ObjectSelected.GetComponent<Slot>();
-                       // ObjectSelected.GetComponent<Slot>().transform.position =
-                         //   ObjectSelected.GetComponent<Slot>().SlotPosition.position;
                         
                         Slot ExtractionSlot = ObjectSelected.GetComponent<Slot>();
                         

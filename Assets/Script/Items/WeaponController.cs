@@ -98,7 +98,6 @@ public class WeaponController : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && CurrenTimeBasicSplashAttack >= CoolwDownBasicSplachAttack)
             {
                 IsSplashAttack = true;
-                _player.IsCanMove = false;
                 CurrenTimeBasicSplashAttack = 0;
             }
             else
@@ -107,9 +106,9 @@ public class WeaponController : MonoBehaviour
             }
 
           
-            if (CurrenTimeBasicSplashAttack >= CoolwDownBasicSplachAttack - 1f && _player.IsCanMove == false)
+            if (CurrenTimeBasicSplashAttack <= CoolwDownBasicSplachAttack )
             {
-                _player.IsCanMove = true;
+                _player.MoveController(false);
             }
         }
    
@@ -134,7 +133,7 @@ public class WeaponController : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && CurrenTimePunchAttack >= CoolwDownPunchAttack)
             {
                 IsPunchAttack = true;
-                _player.IsCanMove = false;
+                _player.MoveController(false);
                 CurrenTimePunchAttack = 0;
             }
             else
@@ -142,9 +141,9 @@ public class WeaponController : MonoBehaviour
                 IsPunchAttack = false;
             }
 
-            if (CurrenTimePunchAttack >= CoolwDownPunchAttack - 1f && _player.IsCanMove == false)
+            if (CurrenTimePunchAttack >= CoolwDownPunchAttack - 1f)
             {
-                _player.IsCanMove = true;
+                _player.MoveController(true);
             }
 
             if (IsCanDefend)

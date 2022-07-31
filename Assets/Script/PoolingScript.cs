@@ -15,9 +15,22 @@ public class PoolingScript : MonoBehaviour
     private static List<GameObject> pooling;
 
     private static bool IsHaveItem = false;
+
+    private void Awake()
+    {
+        if (PoolingScript.poolingParent == null)
+        {
+            PoolingScript.poolingParent = this.gameObject;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
-        poolingParent = GameObject.FindGameObjectWithTag("PoolingParent");
         
         ChildPoolingCount = poolingParent.transform.childCount;
         poolingChild = new GameObject[ChildPoolingCount];
@@ -25,20 +38,14 @@ public class PoolingScript : MonoBehaviour
         // Agrega todos los prefabs que hay en la carpeta Items
         pooling = new List<GameObject>(Resources.LoadAll<GameObject>("Pooling"));
         
-        Debug.Log($"GameObject Added to the Pool : {pooling.Count}");
+        Debug.Log($"GameObject Added to the Pool : {pooling.Count} (Sucesfull)");
     
     }
 
-    private void Update()
-    {
-   
-    }
 
     public static void Instantiate(int id,Transform ObjectPosition,Transform parent, Quaternion rotacion)
     {
         GetChildInPool(id);
-        
-      
         
         foreach (GameObject ObjectInPool in poolingChild)
         {
@@ -47,7 +54,7 @@ public class PoolingScript : MonoBehaviour
             {
                 if (ObjectInPool.GetComponent<Items>().ID == id)
                 {
-                    Debug.Log($"Found Object ID :{id}");
+                    Debug.Log($"Found Object ID :{id} (Sucesfull)");
 
                     ObjectInPool.SetActive(true);
                     ObjectInPool.gameObject.transform.position = ObjectPosition.position;
@@ -63,11 +70,13 @@ public class PoolingScript : MonoBehaviour
 
         if (poolingChild.Length < 0 || IsHaveItem == false)
         {
+            Debug.Log("No Found Object ");
+
             foreach (var FindObject in pooling)
             {
                 if (FindObject.GetComponent<Items>().ID == id)
                 {
-                    Debug.Log($"Create New Item ID: {id}");
+                    Debug.Log($"Create New Item ID: {id} (Sucesfull)");
 
                     Instantiate(FindObject,ObjectPosition.position,rotacion,parent);
                 }
@@ -80,13 +89,14 @@ public class PoolingScript : MonoBehaviour
 
     public static void Remove(GameObject ObjectRemove)
     {
-        Debug.Log($"Remove Item Name : {ObjectRemove.name} ");
+        Debug.Log($"Remove Item Name : {ObjectRemove.name} (Sucesfull) ");
         ObjectRemove.SetActive(false);
         ObjectRemove.transform.SetParent(poolingParent.transform);
     }
 
     private static void GetChildInPool(int id)
     {
+        Debug.Log("Find Object in PoolParent");
         ChildPoolingCount = poolingParent.transform.childCount;
         
         for (int i = 0; i < ChildPoolingCount; i++) 
@@ -96,16 +106,14 @@ public class PoolingScript : MonoBehaviour
         
         for (int i = 0; i < ChildPoolingCount; i++)
         {
-            Debug.Log("Find Object in PoolParent");
             if (IsHaveItem == false)
             {
                 if (poolingChild[i].gameObject.GetComponent<Items>().ID == id)
                 {
-                    Debug.Log("Find Object");
+                    Debug.Log("Found Object : (Sucesfull)");
                     IsHaveItem = true;
                 }
             }
-            Debug.Log($"IshaveItem {IsHaveItem}");
         }
     }
 }
