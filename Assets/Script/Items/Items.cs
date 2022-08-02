@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,34 +25,17 @@ public class Items : MonoBehaviour
     [HideInInspector]
     private GameObject Inventory;
 
-    
-    
 
+    private GameObject lastPlayerTakeItem;
     private void Start()
     {
-        weaponManager = GameObject.FindGameObjectWithTag("WeaponManager");
-        Inventory = GameObject.FindGameObjectWithTag("Inventory");
-       
-       
+     //   Inventory = GameObject.FindGameObjectWithTag("Inventory");
 
-        if (!playerWeapon) 
-        {
-            int allWeapon = weaponManager.transform.childCount;
-
-            for (int i = 0; i < allWeapon; i++) 
-            {
-                if(weaponManager.transform.GetChild(i).gameObject.GetComponent<Items>().ID == ID)
-                {
-                    weapon = weaponManager.transform.GetChild(i).gameObject;
-                }
-            }
-        }
     }
     private void Update()
     {
         if (equipped) 
         {
-       
             
             if (Input.GetMouseButtonUp(1) && Inventory.activeSelf == true )
             {
@@ -62,7 +46,6 @@ public class Items : MonoBehaviour
                 gameObject.SetActive(false);
             }
             
-
         }
   
     }
@@ -83,4 +66,47 @@ public class Items : MonoBehaviour
             weapon.GetComponent<Items>().equipped = true;
         }
     }
+
+    private void UpdateInterface()
+    {
+        if (weaponManager != null)
+        {
+            if (!playerWeapon) 
+            {
+                int allWeapon = weaponManager.transform.childCount;
+
+                for (int i = 0; i < allWeapon; i++) 
+                {
+                    if(weaponManager.transform.GetChild(i).gameObject.GetComponent<Items>().ID == ID)
+                    {
+                        weapon = weaponManager.transform.GetChild(i).gameObject;
+                    }
+                }
+            }
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+       
+        if (other.CompareTag("PJ"))
+        {
+            if (weaponManager == null && lastPlayerTakeItem != other.gameObject)
+            {
+                weaponManager = other.GetComponent<WeaponController>().weaponManager.gameObject;
+                UpdateInterface();
+            }
+            if (Inventory == null && lastPlayerTakeItem != other.gameObject)
+            {
+                Inventory = other.GetComponent<Inventory>().inventory.gameObject;
+                Debug.Log(Inventory.gameObject.name);
+            }
+        }
+        if (lastPlayerTakeItem == null)
+        { 
+            lastPlayerTakeItem = other.gameObject;
+        }
+    }
+
+  
+
 }

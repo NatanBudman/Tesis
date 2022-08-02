@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,17 @@ public class TestingScript : MonoBehaviour
     public int amount;
 
     public GameObject weapons;
+    
+    public bool RemoveALL;
 
+    private void Awake()
+    {
+
+    }
+
+    private void Start()
+    {
+    }
 
     // Update is called once per frame
     void Update()
@@ -27,5 +38,11 @@ public class TestingScript : MonoBehaviour
            PoolingScript.Remove(weapons);
            amount++;
         }
+
+        if (RemoveALL)
+        {
+            PoolingScript.RemovedAll(ID,"Item","Weapon");
+        }
+        
     }
 }

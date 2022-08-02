@@ -7,8 +7,7 @@ public class WeaponController : MonoBehaviour
     private PlayerController _player;
     [SerializeField]
     private GameObject ItemEquiped;
-
-    private GameObject weaponManager;
+    public GameObject weaponManager;
     //private Items ItemEquiped;
     private int _allItems;
 
@@ -32,8 +31,6 @@ public class WeaponController : MonoBehaviour
     {
         
         _player = GetComponent<PlayerController>();
-        
-        weaponManager = GameObject.FindGameObjectWithTag("WeaponManager");
         
         _allItems = weaponManager.transform.childCount;
         

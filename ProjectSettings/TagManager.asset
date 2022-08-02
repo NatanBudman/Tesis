@@ -12,6 +12,8 @@ TagManager:
   - LeftHand
   - slot
   - Slot_Halder
+  - Spawn
+  - PoolingManager
   layers:
   - Default
   - TransparentFX

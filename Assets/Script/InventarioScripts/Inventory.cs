@@ -32,6 +32,11 @@ public class Inventory : MonoBehaviour
     
     public GameObject PoolingItems;
 
+    private void Awake()
+    {
+        PoolingItems = GameObject.FindGameObjectWithTag("PoolingManager");
+    }
+
     void Start()
     {
         // referencia el numero de spacios que hay
