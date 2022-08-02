@@ -1,6 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics.Tracing;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using JetBrains.Annotations;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -15,6 +20,8 @@ public class PoolingScript : MonoBehaviour
     private static List<GameObject> pooling;
 
     private static bool IsHaveItem = false;
+
+    private static GameObject[] findObjectRemove;
 
     private void Awake()
     {
@@ -93,7 +100,52 @@ public class PoolingScript : MonoBehaviour
         ObjectRemove.SetActive(false);
         ObjectRemove.transform.SetParent(poolingParent.transform);
     }
+    
+    public static void RemovedAll(int id, string TagObject, string TypeObject)
+    {
+        findObjectRemove = GameObject.FindGameObjectsWithTag(TagObject);
+        if (TypeObject == null)
+        {
+            for (int i = 0; i < findObjectRemove.Length; i++)
+            {
+                if (findObjectRemove[i].GetComponent<Items>().ID == id)
+                {
+                    findObjectRemove[i].gameObject.SetActive(false);
+                    findObjectRemove[i].gameObject.transform.SetParent(poolingParent.transform);
+                }
+            }
+        }
 
+        if (TypeObject != null)
+        {
+            for (int i = 0; i < findObjectRemove.Length; i++)
+            {
+                if (findObjectRemove[i].GetComponent<Items>().type == TypeObject)
+                {
+                    findObjectRemove[i].gameObject.SetActive(false);
+                    findObjectRemove[i].gameObject.transform.SetParent(poolingParent.transform);
+                }
+            }
+        }
+    }
+    
+    // pre cargar recursos reutilizables
+    public static void PreLoad(int id,int amount)
+    {
+            foreach (var FindObject in pooling)
+            {
+                if (FindObject.GetComponent<Items>().ID == id)
+                {
+                    Debug.Log($"Pre Load New Items ID: {id} (Sucesfull)");
+
+                    for (int i = 0; i < amount; i++)
+                    {
+                        Instantiate(FindObject,poolingParent.transform.position,Quaternion.identity,poolingParent.transform);
+                    }
+
+                }
+            }
+    }
     private static void GetChildInPool(int id)
     {
         Debug.Log("Find Object in PoolParent");
