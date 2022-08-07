@@ -14,6 +14,8 @@ TagManager:
   - Slot_Halder
   - Spawn
   - PoolingManager
+  - InteractuableObject/Chess
+  - InteractuableObject/Canvas
   layers:
   - Default
   - TransparentFX

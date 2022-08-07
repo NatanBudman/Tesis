@@ -29,7 +29,7 @@ public class TestingScript : MonoBehaviour
     {
         if (amount > 0)
         {
-            PoolingScript.Instantiate(ID,pos,this.gameObject.transform,Quaternion.identity);
+            PoolingScript.Instantiate(weapons,-1,pos,this.gameObject.transform,Quaternion.identity);
             amount--;
         }
 

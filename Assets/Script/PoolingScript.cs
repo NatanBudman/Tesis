@@ -50,18 +50,18 @@ public class PoolingScript : MonoBehaviour
     }
 
 
-    public static void Instantiate(int id,Transform ObjectPosition,Transform parent, Quaternion rotacion)
+    public static void Instantiate(GameObject Item,int id,Transform ObjectPosition,Transform parent, Quaternion rotacion)
     {
-        GetChildInPool(id);
+        GetChildInPool(Item,id);
         
         foreach (GameObject ObjectInPool in poolingChild)
         {
 
             if (ObjectInPool.GetComponent<Items>().gameObject != null && IsHaveItem)
             {
-                if (ObjectInPool.GetComponent<Items>().ID == id)
+                if (ObjectInPool.GetComponent<Items>().ID == id || Item.gameObject == ObjectInPool.gameObject)
                 {
-                    Debug.Log($"Found Object ID :{id} (Sucesfull)");
+                    Debug.Log($"Found Object :{Item} (Sucesfull)");
 
                     ObjectInPool.SetActive(true);
                     ObjectInPool.gameObject.transform.position = ObjectPosition.position;
@@ -81,9 +81,9 @@ public class PoolingScript : MonoBehaviour
 
             foreach (var FindObject in pooling)
             {
-                if (FindObject.GetComponent<Items>().ID == id)
+                if (FindObject.GetComponent<Items>().ID == id || Item.gameObject == FindObject.gameObject)
                 {
-                    Debug.Log($"Create New Item ID: {id} (Sucesfull)");
+                    Debug.Log($"Create New Item : {Item} (Sucesfull)");
 
                     Instantiate(FindObject,ObjectPosition.position,rotacion,parent);
                 }
@@ -146,7 +146,7 @@ public class PoolingScript : MonoBehaviour
                 }
             }
     }
-    private static void GetChildInPool(int id)
+    private static void GetChildInPool(GameObject item,int id)
     {
         Debug.Log("Find Object in PoolParent");
         ChildPoolingCount = poolingParent.transform.childCount;
@@ -160,7 +160,7 @@ public class PoolingScript : MonoBehaviour
         {
             if (IsHaveItem == false)
             {
-                if (poolingChild[i].gameObject.GetComponent<Items>().ID == id)
+                if (poolingChild[i].gameObject.GetComponent<Items>().ID == id || item.gameObject == poolingChild[i].gameObject )
                 {
                     Debug.Log("Found Object : (Sucesfull)");
                     IsHaveItem = true;

@@ -31,7 +31,10 @@ public class Inventory : MonoBehaviour
     private List<RaycastResult> _raycastResults;
     
     public GameObject PoolingItems;
-
+    
+    [Header("Extern Inventory")]
+    [SerializeField]
+    private GameObject TradeInvetory;
     private void Awake()
     {
         PoolingItems = GameObject.FindGameObjectWithTag("PoolingManager");
@@ -43,7 +46,7 @@ public class Inventory : MonoBehaviour
         _allSlots = SlotsHolder.transform.childCount;
         
         slots = new GameObject[_allSlots];
-
+        
         for (int i = 0; i < _allSlots; i++) 
         {
             slots[i] = SlotsHolder.transform.GetChild(i).gameObject;
@@ -65,6 +68,7 @@ public class Inventory : MonoBehaviour
             IsInventoryEnabled = !IsInventoryEnabled;
         }
 
+      
         if (IsInventoryEnabled) 
         {
             inventory.SetActive(true);
@@ -77,6 +81,9 @@ public class Inventory : MonoBehaviour
         DragItem();
 
     }
+
+    private GameObject Chess;
+    private GameObject ChessInentory;
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Item") 
@@ -87,8 +94,49 @@ public class Inventory : MonoBehaviour
 
             AddItem(ItemPickUpObject,item.ID,item.amount,item.type,item.Description,item.icon);
 
-          
         }
+
+        if (other.tag == "InteractuableObject/Chess")
+        {
+            ChessInentory = other.gameObject.GetComponent<Chess>().ChessInvetory;
+            Chess = other.gameObject;
+            ChessInentory.transform.SetParent(TradeInvetory.transform);
+            ChessInentory.transform.position = TradeInvetory.transform.position;
+        }
+    
+    }
+
+    private float coolDownOpenChessInventory;
+    private void OnTriggerStay(Collider other)
+    {
+        
+        if (other.tag == "InteractuableObject/Chess")
+        {
+            if (coolDownOpenChessInventory < 0.2f)
+            {
+                coolDownOpenChessInventory += Time.deltaTime;
+            }
+            if (Input.GetKey(KeyCode.E) && !TradeInvetory.gameObject.activeSelf && coolDownOpenChessInventory >= 0.2f)
+            {
+                TradeInvetory.gameObject.SetActive(true);
+                ChessInentory.SetActive(true);
+                coolDownOpenChessInventory = 0;
+            }
+            else if (Input.GetKey(KeyCode.E) && TradeInvetory.gameObject.activeSelf && coolDownOpenChessInventory >= 0.2f)
+            {
+                TradeInvetory.gameObject.SetActive(false);
+                ChessInentory.SetActive(false);
+                coolDownOpenChessInventory = 0;
+            }
+           
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        ChessInentory.transform.SetParent(Chess.transform);
+        ChessInentory.SetActive(false);
+        TradeInvetory.SetActive(false);
     }
 
     void DragItem()
@@ -106,17 +154,38 @@ public class Inventory : MonoBehaviour
                     ObjectSelected = _raycastResults[0].gameObject;
 
                 }
-            }
-        }
 
+                if (_raycastResults[0].gameObject.tag == "InteractuableObject/Canvas")
+                {
+                    ObjectSelected = _raycastResults[0].gameObject;
+                    Debug.Log(ObjectSelected.gameObject.name);
+
+                }
+            }
+
+        }
+// Objecto selecionado con el raton
         if ( ObjectSelected != null)
         {
-            if (ObjectSelected.GetComponent<Slot>().empty == false )
+            if (ObjectSelected.GetComponent<Slot>() != null)
             {
-                ObjectSelected.GetComponent<RectTransform>().localPosition = CanvasScreen(Input.mousePosition);
+                if (ObjectSelected.GetComponent<Slot>().empty == false)
+                {
+                    ObjectSelected.GetComponent<RectTransform>().localPosition = CanvasScreen(Input.mousePosition);
 
+                }
+            }
+
+            if (ObjectSelected.GetComponent<Image>() != null)
+            {
+                if (ObjectSelected.gameObject.tag == "InteractuableObject/Canvas")
+                {
+                    ObjectSelected.GetComponent<RectTransform>().localPosition = CanvasScreen(Input.mousePosition);
+                }
             }
         }
+
+        
         if (Input.GetMouseButtonUp(0))
         {
             pointerEventData.position = Input.mousePosition;
