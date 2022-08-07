@@ -55,6 +55,7 @@
      <Compile Include="Assets\Script\InventarioScripts\Inventory.cs" />
      <Compile Include="Assets\Script\InventarioScripts\InventoryCamera.cs" />
      <Compile Include="Assets\Script\TestingScript.cs" />
+     <Compile Include="Assets\Script\InteractuableObjects\Chess.cs" />
      <Compile Include="Assets\Script\PoolingScript.cs" />
      <Compile Include="Assets\Script\Items\WeaponController.cs" />
      <Compile Include="Assets\Script\Items\ItemInHand.cs" />
